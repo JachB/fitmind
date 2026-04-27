@@ -14,10 +14,28 @@ import { checkAndUnlockAchievements } from '@/lib/gamification/achievements'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
+export const maxDuration = 60
 
 const XP_PER_MESSAGE = 1
 const LONG_MESSAGE_THRESHOLD = 150
 const LONG_MESSAGE_BONUS = 5
+
+function friendlyGeminiError(raw: string): string {
+  const msg = raw.toLowerCase()
+  if (msg.includes('quota') || msg.includes('resource_exhausted') || msg.includes('rate')) {
+    return 'AI ma teraz mocno zajęte — spróbuj za chwilę.'
+  }
+  if (msg.includes('safety') || msg.includes('blocked')) {
+    return 'AI odrzuciło tę wiadomość filtrami bezpieczeństwa. Sformułuj inaczej.'
+  }
+  if (msg.includes('timeout') || msg.includes('aborted') || msg.includes('deadline')) {
+    return 'Odpowiedź zajęła za długo. Spróbuj jeszcze raz.'
+  }
+  if (msg.includes('overload') || msg.includes('unavailable') || msg.includes('503')) {
+    return 'Serwery AI chwilowo niedostępne. Spróbuj za moment.'
+  }
+  return 'Coś poszło nie tak po stronie AI. Spróbuj jeszcze raz.'
+}
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
@@ -166,11 +184,12 @@ export async function POST(request: NextRequest) {
           }
         }
       } catch (err) {
-        const message =
-          err instanceof Error ? err.message : 'Gemini error'
-        controller.enqueue(
-          encoder.encode(`\n\n[Błąd AI: ${message}]`),
-        )
+        const raw = err instanceof Error ? err.message : 'unknown'
+        const friendly = friendlyGeminiError(raw)
+        // If we already streamed some text, append the friendly note inline.
+        // If nothing streamed yet, replace the empty bubble with just the note.
+        const prefix = fullText.length > 0 ? '\n\n' : ''
+        controller.enqueue(encoder.encode(`${prefix}⚠️ ${friendly}`))
       } finally {
         controller.close()
 

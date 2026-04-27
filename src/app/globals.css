@@ -52,6 +52,14 @@ body {
   font-feature-settings: "tnum" 1, "cv11" 1;
 }
 
+/* Tailwind v4 reset removes the default button cursor — restore it for any
+   clickable button or radio-style element so the UI feels right. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+summary {
+  cursor: pointer;
+}
+
 /* Serif display font — used sparingly on hero moments */
 .font-serif {
   font-family: var(--font-instrument-serif), Georgia, serif;
