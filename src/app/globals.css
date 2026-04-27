@@ -90,9 +90,13 @@ summary {
   border-radius: inherit;
 }
 
-/* Prevent layout shift when modal opens */
+/* Prevent layout shift when modal opens; hide mobile bottom nav so the modal
+   has full viewport height and isn't clipped by it. */
 html.modal-open {
   overflow: hidden;
+}
+html.modal-open [data-mobile-nav] {
+  display: none;
 }
 
 /* Safe area on iOS */

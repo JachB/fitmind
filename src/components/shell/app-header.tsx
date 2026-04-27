@@ -47,8 +47,9 @@ export function AppHeader({ userName, userEmail, signOutAction }: Props) {
           <Image
             src="/images/logo-icon.webp"
             alt="FitMind logo"
-            width={38}
-            height={44}
+            width={40}
+            height={40}
+            style={{ width: 40, height: 40 }}
             className="object-contain drop-shadow-[0_0_10px_rgba(245,158,11,0.5)] group-hover:drop-shadow-[0_0_16px_rgba(245,158,11,0.8)] transition"
           />
           <span className="font-bold text-xl tracking-tight text-zinc-50">

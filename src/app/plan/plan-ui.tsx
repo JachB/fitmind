@@ -165,7 +165,7 @@ function EmptyState({
             alt="FitMind logo"
             width={64}
             height={64}
-            style={{ transform: 'translateX(-7px) translateY(9px)' }}
+            style={{ width: 64, height: 64, transform: 'translateX(-7px) translateY(9px)' }}
             className="object-contain drop-shadow-[0_0_20px_rgba(245,158,11,0.6)]"
           />
         </div>

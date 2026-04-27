@@ -13,14 +13,18 @@ type Props = {
 
 export function CountUp({ to, duration = 1600, suffix = '', prefix = '', format, className }: Props) {
   const ref = useRef<HTMLSpanElement>(null)
-  const [value, setValue] = useState(() =>
-    typeof IntersectionObserver === 'undefined' ? to : 0,
-  )
+  // Same initial value on server + client to avoid hydration mismatch.
+  const [value, setValue] = useState(0)
   const started = useRef(false)
 
   useEffect(() => {
     const el = ref.current
-    if (!el || typeof IntersectionObserver === 'undefined') return
+    if (!el) return
+    if (typeof IntersectionObserver === 'undefined') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- legitimate SSR fallback
+      setValue(to)
+      return
+    }
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {

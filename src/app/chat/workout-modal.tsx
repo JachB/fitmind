@@ -179,7 +179,7 @@ export function WorkoutModal({ open, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-lg max-h-[90vh] sm:max-h-[85vh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl border border-zinc-800/60 bg-zinc-950/95 shadow-[0_32px_80px_-16px_rgba(0,0,0,0.8)] animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300"
+        className="relative w-full max-w-lg max-h-[100dvh] sm:max-h-[85vh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl border border-zinc-800/60 bg-zinc-950/95 shadow-[0_32px_80px_-16px_rgba(0,0,0,0.8)] animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         <header className="shrink-0 flex items-center justify-between border-b border-zinc-800/60 px-5 py-4">

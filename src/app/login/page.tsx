@@ -54,6 +54,7 @@ export default async function LoginPage(props: { searchParams: SearchParams }) {
                 alt="FitMind logo"
                 width={96}
                 height={96}
+                style={{ width: 96, height: 96 }}
                 className="relative object-contain drop-shadow-[0_0_24px_rgba(245,158,11,0.7)]"
               />
             </div>

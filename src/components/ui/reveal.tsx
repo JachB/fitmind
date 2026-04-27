@@ -30,13 +30,19 @@ export function Reveal({
   ...rest
 }: Props) {
   const ref = useRef<HTMLElement>(null)
-  const [visible, setVisible] = useState(
-    () => typeof IntersectionObserver === 'undefined',
-  )
+  // Always start as not-visible. Browsers without IntersectionObserver are
+  // handled in the effect. Same initial state on server + client = no hydration
+  // mismatch.
+  const [visible, setVisible] = useState(false)
 
   useEffect(() => {
     const el = ref.current
-    if (!el || typeof IntersectionObserver === 'undefined') return
+    if (!el) return
+    if (typeof IntersectionObserver === 'undefined') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- legitimate SSR fallback
+      setVisible(true)
+      return
+    }
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {

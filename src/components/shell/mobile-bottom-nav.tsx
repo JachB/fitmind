@@ -23,6 +23,7 @@ export function MobileBottomNav() {
 
   return (
     <nav
+      data-mobile-nav
       className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-zinc-800/60 bg-zinc-950/90 backdrop-blur-xl safe-bottom"
       aria-label="Nawigacja mobilna"
     >
