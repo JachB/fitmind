@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+Disallow: /chat
+Disallow: /plan
+Disallow: /profile
+Disallow: /onboarding
+
+Sitemap: https://fitmind-iota.vercel.app/sitemap.xml

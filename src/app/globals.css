@@ -1,26 +1,433 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-0: #09090b;
+  --bg-1: #0d0d10;
+  --bg-2: #13131a;
+
+  --border-soft: rgba(63, 63, 70, 0.35);
+  --border-strong: rgba(82, 82, 91, 0.5);
+
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a;
+
+  --accent-amber: #f59e0b;
+  --accent-orange: #f97316;
+  --accent-rose: #f43f5e;
+  --accent-emerald: #10b981;
+  --accent-sky: #0ea5e9;
+
+  --shadow-glow: 0 0 40px -8px rgba(249, 115, 22, 0.4);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--bg-0);
+  --color-foreground: var(--text-primary);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-instrument-serif);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html, body {
+  background: var(--bg-0);
+  color: var(--text-primary);
+  min-height: 100vh;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(249, 115, 22, 0.10), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 100% 100%, rgba(244, 63, 94, 0.05), transparent 50%),
+    var(--bg-0);
+}
+
+/* Numbers default to tabular-nums for alignment in stat blocks */
+.nums,
+[data-nums] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "cv11" 1;
+}
+
+/* Serif display font — used sparingly on hero moments */
+.font-serif {
+  font-family: var(--font-instrument-serif), Georgia, serif;
+  letter-spacing: -0.02em;
+}
+
+/* Subtle scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(82, 82, 91, 0.4) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(82, 82, 91, 0.4);
+  border-radius: 4px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(113, 113, 122, 0.6);
+}
+
+/* Focus ring — premium soft glow instead of default ring */
+*:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-0), 0 0 0 4px rgba(249, 115, 22, 0.5);
+  border-radius: inherit;
+}
+
+/* Prevent layout shift when modal opens */
+html.modal-open {
+  overflow: hidden;
+}
+
+/* Safe area on iOS */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .safe-top { padding-top: env(safe-area-inset-top); }
+}
+
+/* ============================================
+   Landing animations — CSS only, IO-triggered
+   ============================================ */
+
+@keyframes reveal-up {
+  from { opacity: 0; transform: translate3d(0, 28px, 0) scale(0.98); filter: blur(6px); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+}
+@keyframes reveal-left {
+  from { opacity: 0; transform: translate3d(-40px, 0, 0); filter: blur(4px); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); filter: blur(0); }
+}
+@keyframes reveal-right {
+  from { opacity: 0; transform: translate3d(60px, 0, 0); filter: blur(4px); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); filter: blur(0); }
+}
+@keyframes reveal-scale {
+  from { opacity: 0; transform: scale(0.9); filter: blur(8px); }
+  to   { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+@keyframes float-y {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(0, -14px, 0); }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(0, -8px, 0); }
+}
+/* aurora-shift removed — rotating blur(80px) on huge elements kills GPU */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+/* pulse-ring removed — animating box-shadow is expensive */
+@keyframes gradient-rotate {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes typing-dot {
+  0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
+  30%           { opacity: 1; transform: translateY(-3px); }
+}
+
+/* Reveal wrapper — starts hidden, class .is-visible triggers anim */
+.reveal            { opacity: 0; will-change: opacity, transform, filter; }
+.reveal.is-visible { animation: reveal-up 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.reveal-left.is-visible  { animation: reveal-left 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.reveal-right.is-visible { animation: reveal-right 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.reveal-scale.is-visible { animation: reveal-scale 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+/* Stagger delays — apply on children */
+.d-1  { animation-delay: 0.08s; }
+.d-2  { animation-delay: 0.16s; }
+.d-3  { animation-delay: 0.24s; }
+.d-4  { animation-delay: 0.32s; }
+.d-5  { animation-delay: 0.40s; }
+.d-6  { animation-delay: 0.48s; }
+.d-7  { animation-delay: 0.56s; }
+
+.float-y    { animation: float-y 5s ease-in-out infinite; }
+.float-slow { animation: float-slow 7s ease-in-out infinite; }
+
+.pulse-ring { /* no-op, kept for API stability */ }
+
+/* Static radial glows — cheap, no animation, no filter */
+.aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  opacity: 0.9;
+}
+
+/* Shimmer text (for "naprawdę" accent) */
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    #f59e0b 0%,
+    #f97316 25%,
+    #fef3c7 50%,
+    #f97316 75%,
+    #f59e0b 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s linear infinite;
+}
+
+/* Gradient border using mask */
+.gradient-border {
+  position: relative;
+  background-clip: padding-box;
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(245,158,11,0.4), rgba(244,63,94,0.2), rgba(14,165,233,0.25));
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* 3D tilt — controlled via CSS vars set by JS */
+.tilt {
+  transform-style: preserve-3d;
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(0);
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.tilt-inner { transform: translateZ(24px); }
+
+/* Grid dot pattern */
+.bg-dots {
+  background-image: radial-gradient(rgba(161,161,170,0.08) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Typing dots */
+.dot-typing span { display: inline-block; animation: typing-dot 1.4s ease-in-out infinite; }
+.dot-typing span:nth-child(2) { animation-delay: 0.2s; }
+.dot-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+/* ============================================================
+   Premium SaaS animations — marquee, conic border, scroll progress
+   ============================================================ */
+
+/* Marquee — endless logo strip */
+@keyframes marquee-x {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-x 28s linear infinite;
+  will-change: transform;
+}
+.marquee:hover .marquee-track { animation-play-state: paused; }
+
+/* Animated conic gradient border — for premium CTA */
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes spin-conic {
+  from { --angle: 0deg; }
+  to   { --angle: 360deg; }
+}
+.conic-border {
+  position: relative;
+  isolation: isolate;
+}
+.conic-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background:
+    conic-gradient(
+      from var(--angle, 0deg),
+      rgba(245,158,11,0.6) 0%,
+      rgba(244,63,94,0.4) 25%,
+      transparent 50%,
+      rgba(14,165,233,0.3) 75%,
+      rgba(245,158,11,0.6) 100%
+    );
+  animation: spin-conic 6s linear infinite;
+}
+@supports not (background: paint(angle)) {
+  .conic-border::before {
+    background: linear-gradient(135deg, rgba(245,158,11,0.5), rgba(244,63,94,0.3), rgba(14,165,233,0.3));
+  }
+}
+
+/* Scroll progress bar — bound to scrollY via JS sets --scroll */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  width: 100%;
+  transform-origin: 0 50%;
+  transform: scaleX(var(--scroll, 0));
+  background: linear-gradient(90deg, #f59e0b, #f97316, #f43f5e);
+  z-index: 60;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Glow trail — animated underline that wipes left to right */
+@keyframes glow-wipe {
+  0%   { background-position: -100% 0; opacity: 0.6; }
+  50%  { opacity: 1; }
+  100% { background-position: 200% 0; opacity: 0.6; }
+}
+.glow-wipe {
+  background-image: linear-gradient(90deg, transparent 0%, rgba(245,158,11,0.6) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: glow-wipe 3s ease-in-out infinite;
+}
+
+/* Mouse spotlight — radial gradient follows cursor */
+.spotlight {
+  position: relative;
+  isolation: isolate;
+}
+.spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background: radial-gradient(
+    600px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(245, 158, 11, 0.12),
+    transparent 40%
+  );
+  transition: opacity 0.25s ease;
+  opacity: 0;
+}
+.spotlight:hover::before { opacity: 1; }
+
+/* Hero h1 — letter-by-letter wipe (clip-path) */
+@keyframes hero-wipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+    filter: blur(8px);
+    opacity: 0;
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+.hero-line {
+  display: block;
+  animation: hero-wipe 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: clip-path, filter, opacity;
+}
+.hero-line.l-1 { animation-delay: 0.05s; }
+.hero-line.l-2 { animation-delay: 0.18s; }
+.hero-line.l-3 { animation-delay: 0.32s; }
+
+/* Animated gradient border on cards (hover) */
+.gradient-border-hover {
+  position: relative;
+}
+.gradient-border-hover::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    130deg,
+    transparent 0%,
+    rgba(245, 158, 11, 0.5) 35%,
+    rgba(244, 63, 94, 0.4) 50%,
+    rgba(14, 165, 233, 0.4) 65%,
+    transparent 100%
+  );
+  background-size: 200% 200%;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease, background-position 0.6s ease;
+  pointer-events: none;
+}
+.gradient-border-hover:hover::after {
+  opacity: 1;
+  background-position: 100% 100%;
+}
+
+/* FAQ — natywny <details> z animacją open/close
+   Używa interpolate-size dla Chrome 129+ + display: none → block fallback */
+@supports (interpolate-size: allow-keywords) {
+  :root { interpolate-size: allow-keywords; }
+  .faq-body {
+    height: 0;
+    transition: height 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  details[open] > .faq-body { height: auto; }
+}
+/* Fallback for older browsers — instant open, no animation */
+@supports not (interpolate-size: allow-keywords) {
+  details:not([open]) > .faq-body { display: none; }
+}
+
+@keyframes faq-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+details[open] > .faq-body > p {
+  animation: faq-fade-in 180ms ease-out;
+}
+
+/* Section divider ornament */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(82,82,91,0.4), transparent);
+}
+
+/* Card hover lift with shadow */
+.card-lift {
+  transition: transform 0.25s cubic-bezier(0.22,1,0.36,1), box-shadow 0.25s ease, border-color 0.2s;
+  will-change: transform;
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 50px -20px rgba(0,0,0,0.7),
+    0 8px 20px -8px rgba(245,158,11,0.15);
+}
+
+/* Reduced motion — respect user preference */
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal-left, .reveal-right, .reveal-scale {
+    opacity: 1 !important;
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  .float-y, .float-slow, .aurora-blob, .shimmer-text, .pulse-ring { animation: none !important; }
+  .marquee-track, .conic-border::before, .glow-wipe { animation: none !important; }
 }
