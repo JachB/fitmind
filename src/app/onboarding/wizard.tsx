@@ -85,8 +85,7 @@ export function OnboardingWizard({ initialName }: Props) {
       toast.success('Witamy w FitMind!', {
         description: `${PERSONA_LABELS_PL[persona].title} czeka na czacie.`,
       })
-      router.push('/chat')
-      router.refresh()
+      router.replace('/chat')
     })
   }
 

@@ -14,6 +14,11 @@ type SearchParams = Promise<{
 export default async function LoginPage(props: { searchParams: SearchParams }) {
   const { error, mode, email, redirect: redirectTo } = await props.searchParams
   const isRegister = mode === 'register'
+  const subtitle = isRegister
+    ? 'Załóż konto i znajdź swojego trenera.'
+    : error
+      ? 'Zaloguj się, żeby kontynuować.'
+      : 'Wróciłeś. Kontynuujmy.'
   const safeRedirect =
     redirectTo && redirectTo.startsWith('/') && !redirectTo.startsWith('//')
       ? redirectTo
@@ -64,9 +69,7 @@ export default async function LoginPage(props: { searchParams: SearchParams }) {
             FitMind
           </h1>
           <p className="mt-3 text-sm text-zinc-400 max-w-xs">
-            {isRegister
-              ? 'Załóż konto i znajdź swojego trenera.'
-              : 'Wróciłeś. Kontynuujmy.'}
+            {subtitle}
           </p>
         </div>
 

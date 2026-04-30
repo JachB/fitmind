@@ -1,6 +1,7 @@
 'use server'
 
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import type { CoachPersona } from '@/lib/gemini/prompts'
 
@@ -54,5 +55,7 @@ export async function finishOnboarding(input: FinishInput) {
     .eq('id', user.id)
 
   if (error) return { error: 'Zapis nie wyszedł: ' + error.message }
+
+  revalidatePath('/chat')
   return { ok: true as const }
 }

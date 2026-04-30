@@ -234,11 +234,12 @@ function BriefingPanel({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="mt-3 text-[11px] text-zinc-500 hover:text-amber-300 transition flex items-center gap-1"
+        className="mt-3 flex items-center gap-2 rounded-xl border border-zinc-700/50 bg-zinc-900/40 px-4 py-2 text-xs font-medium text-zinc-300 transition hover:border-amber-500/40 hover:text-amber-300 active:scale-[0.97]"
       >
         <ChevronDown
-          size={11}
-          className={cn('transition-transform', open && 'rotate-180')}
+          size={13}
+          strokeWidth={2}
+          className={cn('transition-transform duration-200', open && 'rotate-180')}
         />
         {open ? 'Schowaj kontekst' : 'Dodaj kontekst dla tego planu'}
       </button>
@@ -301,9 +302,9 @@ function PlanHeader({
               setOpen(true)
             }
           }}
-          className="flex items-center gap-1.5 rounded-full border border-zinc-800/60 bg-zinc-900/40 px-3 py-1.5 text-xs text-zinc-400 transition hover:border-amber-500/40 hover:text-amber-300"
+          className="group flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 px-3.5 py-1.5 text-xs font-medium text-amber-300 transition hover:border-amber-500/60 hover:bg-amber-500/15 active:scale-[0.97]"
         >
-          <RefreshCw size={11} />
+          <RefreshCw size={11} strokeWidth={2} className="transition-transform group-hover:rotate-180 duration-500" />
           {open ? (trimmed ? 'Wygeneruj z briefingiem' : 'Wygeneruj nowy') : 'Nowy plan'}
         </button>
       </div>
